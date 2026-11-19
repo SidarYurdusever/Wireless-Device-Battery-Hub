@@ -15,6 +15,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <xinput.h>
 
 namespace {
 
@@ -22,6 +23,35 @@ const USHORT kVid = 0x25A7;
 const USHORT kPidWired = 0xFA7B;
 const USHORT kPidDongle = 0xFA7C;
 const USHORT kPidRedragon = 0xFA7E;
+
+// Fantech Shooter III Gamepad (2.4 GHz wireless receiver / Bluetooth)
+const USHORT kVidShooterDongle = 0x0283;
+const USHORT kPidShooterDongle = 0x0001;
+const USHORT kVidShanWan = 0x2563;
+const USHORT kPidShanWan = 0x0575;
+
+using GetBatteryFn = DWORD(WINAPI*)(DWORD, BYTE, XINPUT_BATTERY_INFORMATION*);
+using GetStateFn = DWORD(WINAPI*)(DWORD, XINPUT_STATE*);
+struct XInputCapsEx { XINPUT_CAPABILITIES caps; WORD vid, pid, version, unk1; DWORD unk2; };
+using GetCapsExFn = DWORD(WINAPI*)(DWORD, DWORD, DWORD, XInputCapsEx*);
+
+struct XInputApi { GetBatteryFn battery = nullptr; GetStateFn state = nullptr; GetCapsExFn capsEx = nullptr; };
+
+const XInputApi& LoadXInputForFantech() {
+    static XInputApi api = [] {
+        XInputApi a;
+        for (const wchar_t* dll : { L"xinput1_4.dll", L"xinput9_1_0.dll" }) {
+            if (HMODULE m = LoadLibraryExW(dll, nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32)) {
+                a.battery = (GetBatteryFn)GetProcAddress(m, "XInputGetBatteryInformation");
+                a.state = (GetStateFn)GetProcAddress(m, "XInputGetState");
+                a.capsEx = (GetCapsExFn)GetProcAddress(m, MAKEINTRESOURCEA(108));
+                if (a.battery && a.state) break;
+            }
+        }
+        return a;
+    }();
+    return api;
+}
 
 constexpr BYTE kReportId = 0x08;
 constexpr size_t kPacketLen = 17;
@@ -102,9 +132,70 @@ bool QueryBattery(HidDev& cmd, const std::vector<HidDev*>& readers, int& pct, bo
     return true;
 }
 
+void PollFantechGamepad(PollContext& ctx) {
+    const XInputApi& api = LoadXInputForFantech();
+    if (!api.battery || !api.state) return;
+
+    // Check if the Fantech / ShanWan receiver or device is physically present in HID
+    bool hasReceiver = !ctx.Find(kVidShooterDongle, kPidShooterDongle, [](const HidColl&) { return true; }).empty() ||
+                       !ctx.Find(kVidShanWan, kPidShanWan, [](const HidColl&) { return true; }).empty();
+
+    for (DWORD user = 0; user < 4; user++) {
+        XINPUT_STATE state{};
+        if (api.state(user, &state) != ERROR_SUCCESS) continue;
+
+        XInputCapsEx cx{};
+        bool matched = false;
+        USHORT vid = 0, pid = 0;
+
+        if (api.capsEx && api.capsEx(1, user, 0, &cx) == ERROR_SUCCESS) {
+            if ((cx.vid == kVidShooterDongle && cx.pid == kPidShooterDongle) ||
+                (cx.vid == kVidShanWan && cx.pid == kPidShanWan)) {
+                matched = true;
+                vid = cx.vid;
+                pid = cx.pid;
+            }
+        }
+
+        // If capsEx did not identify VID/PID (e.g. generic driver wrapper), but the physical dongle is present
+        // and only one controller is active, link it to Fantech Shooter III.
+        if (!matched && hasReceiver && !ctx.IsClaimed(kVidShooterDongle, kPidShooterDongle)) {
+            matched = true;
+            vid = kVidShooterDongle;
+            pid = kPidShooterDongle;
+        }
+
+        if (!matched) continue;
+
+        XINPUT_BATTERY_INFORMATION bi{};
+        if (api.battery(user, BATTERY_DEVTYPE_GAMEPAD, &bi) != ERROR_SUCCESS) continue;
+        if (bi.BatteryType == BATTERY_TYPE_DISCONNECTED) continue;
+
+        DeviceStatus s;
+        s.key = L"fantech:shooter3:" + Hex4(pid) + L":" + std::to_wstring(user);
+        s.name = L"Fantech Shooter III Gamepad";
+        s.kind = DeviceKind::Gamepad;
+        s.via = (vid == kVidShanWan) ? L"Bluetooth" : L"2.4 GHz receiver";
+        s.charging = false;
+
+        switch (bi.BatteryLevel) {
+            case BATTERY_LEVEL_EMPTY:  s.percent = 10;  break;
+            case BATTERY_LEVEL_LOW:    s.percent = 30;  break;
+            case BATTERY_LEVEL_MEDIUM: s.percent = 65;  break;
+            case BATTERY_LEVEL_FULL:
+            default:                   s.percent = 100; break;
+        }
+
+        ctx.Add(s, vid, pid);
+        ctx.Claim(vid, pid);
+    }
+}
+
 }  // namespace
 
 void PollFantech(PollContext& ctx) {
+    PollFantechGamepad(ctx);
+
     for (auto [vid, pid] : ctx.Products(kVid)) {
         if (pid != kPidWired && pid != kPidDongle && pid != kPidRedragon) continue;
 

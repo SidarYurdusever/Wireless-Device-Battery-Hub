@@ -25,6 +25,7 @@ const BrandStyle kBrands[] = {
     { Accent::CoolerMaster, L"Cooler Master",{ 157, 107, 255 }, { 106,  43, 217 } },  // purple
     { Accent::Steam,        L"Steam",        {  26, 159, 255 }, {  11, 111, 191 } },  // #1A9FFF
     { Accent::Redragon,     L"Redragon",     { 230,   0,  18 }, { 192,   0,  15 } },  // #E60012
+    { Accent::Fantech,      L"Fantech",      { 237,  28,  36 }, { 190,  18,  24 } },  // #ED1C24
 };
 
 std::wstring Lower(std::wstring s) {
@@ -63,6 +64,7 @@ const KeyRule kKeys[] = {
     { L"coolermaster:", Accent::CoolerMaster },
     { L"steam:", Accent::Steam },
     { L"redragon:", Accent::Redragon },
+    { L"fantech:", Accent::Fantech },
 };
 
 // Vendor ids that only one of these brands uses. Shared ones are left to the name check:
@@ -82,6 +84,8 @@ const VidRule kVids[] = {
     { 0x0ECB, Accent::Jbl },
     { 0x2516, Accent::CoolerMaster },
     { 0x28DE, Accent::Steam },
+    { 0x25A7, Accent::Fantech },
+    { 0x0283, Accent::Fantech },
 };
 
 enum class How { Contains, Word, Prefix, Exact };
@@ -113,6 +117,7 @@ const NameRule kNames[] = {
     { L"cooler master", How::Contains, Accent::CoolerMaster }, { L"coolermaster", How::Contains, Accent::CoolerMaster },
     { L"steam controller", How::Contains, Accent::Steam },
     { L"redragon", How::Contains, Accent::Redragon },
+    { L"fantech", How::Contains, Accent::Fantech },
 };
 
 bool Matches(const std::wstring& n, const NameRule& r) {

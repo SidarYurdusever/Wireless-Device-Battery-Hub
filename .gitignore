@@ -1,6 +1,7 @@
 build/
 wireless-battery
 *.exe
+*.zip
 *.o
 dist/
 third_party/
