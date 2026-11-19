@@ -2,7 +2,10 @@
 
 *A lightweight Windows taskbar widget and tray monitor for wireless mice, keyboards, headsets, and gamepads.*
 
-> **Fork / Enhanced Edition by [Sidar Yurdusever](https://github.com/SidarYurdusever)**  
+> 💡 **Credits & Acknowledgements:**  
+> This project is a customized fork of the wonderful open-source project **[Wireless-Device-Battery-Monitor (BatteryHub)](https://github.com/krisgfx9/Wireless-Device-Battery-Monitor)** created by **[krisgfx9](https://github.com/krisgfx9)**. All original core architecture, Win32 widget engine, and multi-vendor HID driver designs belong to the original author and contributors.
+> 
+> **Enhanced Edition by [Sidar Yurdusever](https://github.com/SidarYurdusever):**  
 > Added native support for **Fantech Shooter III Wireless Gamepad** (2.4 GHz Dongle & Bluetooth) with real-time numeric percentage readout and custom Fantech brand styling!
 
 ---
@@ -10,6 +13,9 @@
 ## 🇹🇷 Türkçe Açıklama & Yenilikler (Turkish Overview)
 
 **BatteryHub**, kablosuz fare, klavye, kulaklık ve oyun kollarının şarj seviyelerini Windows görev çubuğunda (saatin yanında) ve sistem tepsisinde doğrudan gösteren hafif ve açık kaynaklı bir araçtır.
+
+### 🙏 Referans ve Teşekkür:
+Bu proje, **[krisgfx9](https://github.com/krisgfx9)** tarafından geliştirilen harika açık kaynaklı **[Wireless-Device-Battery-Monitor](https://github.com/krisgfx9/Wireless-Device-Battery-Monitor)** projesinin geliştirilmiş bir fork'udur. Temel motor ve harika Win32 mimarisi için orijinal geliştiriciye teşekkür ederiz.
 
 ### 🌟 Bu Sürümde Eklenen Özellikler:
 * **🎮 Fantech Shooter III Gamepad Desteği:** 
@@ -32,7 +38,7 @@
 
 ## 🇬🇧 English Overview & Features
 
-Battery levels of your wireless gaming peripherals right on your Windows taskbar:
+Battery levels of your wireless gaming peripherals right on your Windows taskbar:  
 `🎧 70%  🖱 85%  🎮 100%`
 
 ### ✨ Key Features
@@ -60,7 +66,8 @@ build.bat
 
 ---
 
-## 📜 License & Credits
+## 📜 Original Project & License
 
-- Based on the open-source [Wireless-Device-Battery-Monitor](https://github.com/krisgfx9/Wireless-Device-Battery-Monitor) by **krisgfx**.
-- Licensed under **GPL-3.0**.
+- **Original Project:** [krisgfx9/Wireless-Device-Battery-Monitor](https://github.com/krisgfx9/Wireless-Device-Battery-Monitor)
+- **Original Author:** [krisgfx9](https://github.com/krisgfx9)
+- **License:** GNU General Public License v3.0 ([GPL-3.0](LICENSE))
