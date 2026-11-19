@@ -1,4 +1,4 @@
-# BatteryHub (Wireless Device Battery Hub) 🔋🎮
+# BatteryHub (Wireless Device Battery Hub) 
 
 *A lightweight Windows taskbar widget and tray monitor for wireless mice, keyboards, headsets, and gamepads.*
 
@@ -14,7 +14,7 @@
 
 **BatteryHub**, kablosuz fare, klavye, kulaklık ve oyun kollarının şarj seviyelerini Windows görev çubuğunda (saatin yanında) ve sistem tepsisinde doğrudan gösteren hafif ve açık kaynaklı bir araçtır.
 
-### 🙏 Referans ve Teşekkür:
+### Referans ve Teşekkür:
 Bu proje, **[krisgfx9](https://github.com/krisgfx9)** tarafından geliştirilen harika açık kaynaklı **[Wireless-Device-Battery-Monitor](https://github.com/krisgfx9/Wireless-Device-Battery-Monitor)** projesinin geliştirilmiş bir fork'udur. Temel motor ve harika Win32 mimarisi için orijinal geliştiriciye teşekkür ederiz.
 
 ### 🌟 Bu Sürümde Eklenen Özellikler:
@@ -41,7 +41,7 @@ Bu proje, **[krisgfx9](https://github.com/krisgfx9)** tarafından geliştirilen 
 Battery levels of your wireless gaming peripherals right on your Windows taskbar:  
 `🎧 70%  🖱 85%  🎮 100%`
 
-### ✨ Key Features
+### Key Features
 - **Extremely Lightweight:** ~770 KB portable single executable using ~2 MB of RAM. Written in pure C++17 / Win32 API.
 - **No Heavy Vendor Software Needed:** Talks directly to hardware via HID / XInput.
 - **Taskbar & Tray Integration:** Shows customizable icon fonts, numeric levels, brand glow, and low-battery alerts.
